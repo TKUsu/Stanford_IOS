@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
-    var firstInput: Bool = true
+    var userInput: Bool = false
     var displayDouble: Double{
         get{
             return Double(display.text!)!
@@ -25,26 +25,27 @@ class ViewController: UIViewController {
     @IBAction func touchDigit(_ sender: UIButton) {
         let digit = sender.currentTitle
         let textInDisplay = display.text
-        if firstInput{
-            display.text = digit!
-            firstInput = false
-        }else{
+        if userInput{
             display.text = textInDisplay! + digit!
+        }else{
+            display.text = digit!
+            userInput = true
         }
     }
     
+    private var brain: CalculatorBrain = CalculatorBrain()
+    
     @IBAction func otherDigit(_ sender: UIButton) {
-        firstInput = true
+        if userInput{
+            brain.setAccumulator(displayDouble)
+            userInput = false
+        }
         
         if let mathematicalSymbol = sender.currentTitle{
-            switch mathematicalSymbol {
-            case "pi":
-                displayDouble = Double.pi
-            case "squre":
-                displayDouble = sqrt(displayDouble)
-            default:
-                break
-            }
+            brain.performOperation(mathematicalSymbol)
+        }
+        if let resule = brain.result {
+            displayDouble = resule
         }
     }
 
